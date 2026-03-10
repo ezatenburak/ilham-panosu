@@ -296,7 +296,7 @@
   document.getElementById('dateDisplay').textContent =
     now.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
 
-  const SYSTEM_PROMPT = `SADECE JSON döndür, başka hiçbir şey yazma, markdown backtick kullanma.
+  const SYSTEM_PROMPT = `SADECE ham JSON döndür. Markdown kullanma, backtick kullanma, açıklama yazma. İlk karakter { olmalı.
 
 {"gunun_siiri":{"metin":"4 satır Türk/dünya şiiri, satırları \n ile ayır","sair":""},"makale":{"baslik":"max 60 karakter","on_izleme":"1-2 cümle özet","detay":"tam paragraf","gercek_url":"web araması yap, gerçek URL yaz"},"ilgi_alani":{"on_izleme":"1 cümle","detay":"tam açıklama"},"teknik_terim":{"terim":"","on_izleme":"1 cümle","aciklama":"keyifli açıklama"},"sanat_eseri":{"eser_adi":"","ressam":"","on_izleme":"1 cümle","kisa_yorum":"derinlikli yorum"}}
 
