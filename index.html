@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>İlham Panosu</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0d0d0f;
+    --font-scale: 1.5; /* Font boyutu çarpanı: 1 = normal, 1.5 = %50 büyük, 2 = 2x */
     --surface: #13131a;
     --border: #1e1e2e;
     --border2: #252535;
@@ -21,6 +22,7 @@
     --muted2: #4a4760;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html { font-size: calc(var(--font-scale) * 10px); }
   html, body { height:100%; }
   body {
     background:var(--bg); color:var(--text);
@@ -46,12 +48,12 @@
     flex-shrink:0; position:relative; z-index:1;
   }
   .title {
-    font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+    font-family:'Syne',sans-serif; font-size:1.65rem; font-weight:700;
     letter-spacing:0.22em; text-transform:uppercase; color:var(--accent1);
   }
   .header-right { display:flex; align-items:center; gap:8px; }
   .date-display {
-    font-family:'DM Mono',monospace; font-size:10px;
+    font-family:'DM Mono',monospace; font-size:1.5rem;
     color:var(--muted); letter-spacing:0.06em;
   }
   .refresh-btn {
@@ -68,7 +70,7 @@
   .error-msg {
     margin:10px 18px; padding:8px 12px;
     border:1px solid rgba(200,90,90,0.25); background:rgba(200,90,90,0.04);
-    font-family:'DM Mono',monospace; font-size:10px; color:#c87e7e;
+    font-family:'DM Mono',monospace; font-size:1.5rem; color:#c87e7e;
     display:none; flex-shrink:0;
   }
   .error-msg.visible { display:block; }
@@ -103,13 +105,13 @@
   .card-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:6px; }
   .card-meta { flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
   .card-label {
-    font-family:'DM Mono',monospace; font-size:9px;
+    font-family:'DM Mono',monospace; font-size:1.35rem;
     letter-spacing:0.18em; text-transform:uppercase; opacity:0.55;
   }
-  .card-title { font-size:16px; font-weight:400; line-height:1.4; color:var(--text); }
+  .card-title { font-size:2.4rem; font-weight:400; line-height:1.4; color:var(--text); }
   .card-preview {
-    font-size:13px; line-height:1.6; color:var(--text); opacity:0.4;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    font-size:1.95rem; line-height:1.6; color:var(--text); opacity:0.4;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
     overflow:hidden; font-style:italic;
   }
   .card-arrow {
@@ -156,7 +158,7 @@
     flex-shrink:0;
   }
   .overlay-label {
-    font-family:'DM Mono',monospace; font-size:9px;
+    font-family:'DM Mono',monospace; font-size:1.35rem;
     letter-spacing:0.18em; text-transform:uppercase; opacity:0.55;
     display:flex; align-items:center; gap:8px;
   }
@@ -182,35 +184,53 @@
 
   /* overlay content styles — bigger, more breathing room */
   .overlay-title {
-    font-size:26px; font-weight:300; line-height:1.3;
-    color:var(--text); margin-bottom:20px;
+    font-size:2.2rem; font-weight:400; line-height:1.3;
+    color:var(--text); margin-bottom:18px;
+    font-family:'Source Serif 4',serif;
   }
-  .overlay-title.italic { font-style:italic; }
+  .overlay-title.italic {
+    font-style:italic;
+    font-family:'Cormorant Garamond',serif;
+    font-size:2.6rem; font-weight:300;
+  }
 
   .poem-text {
-    font-size:19px; font-style:italic; font-weight:300;
-    line-height:2.2; white-space:pre-line; color:var(--text);
+    font-size:2rem; font-style:italic; font-weight:300;
+    font-family:'Cormorant Garamond',serif;
+    line-height:1.95; white-space:pre-line; color:var(--text);
   }
   .poem-author {
     margin-top:16px; font-family:'DM Mono',monospace;
-    font-size:10px; color:var(--muted);
+    font-size:1.1rem; color:var(--muted);
   }
   .poem-author::before { content:'— '; }
 
-  .article-text { font-size:16px; line-height:1.9; opacity:0.87; }
-  .insight-text { font-size:16px; line-height:1.9; opacity:0.87; }
-  .term-desc { font-size:16px; line-height:1.9; opacity:0.87; }
-  .art-comment { font-size:16px; line-height:1.9; opacity:0.87; }
+  .article-text {
+    font-size:1.6rem; line-height:1.7; opacity:0.87;
+    font-family:'Source Serif 4',serif;
+  }
+  .insight-text {
+    font-size:1.6rem; line-height:1.7; opacity:0.87;
+    font-family:'Source Serif 4',serif;
+  }
+  .term-desc {
+    font-size:1.6rem; line-height:1.7; opacity:0.87;
+    font-family:'Source Serif 4',serif;
+  }
+  .art-comment {
+    font-size:1.6rem; line-height:1.7; opacity:0.87;
+    font-family:'Source Serif 4',serif;
+  }
 
   .art-artist {
-    font-family:'DM Mono',monospace; font-size:10px;
+    font-family:'DM Mono',monospace; font-size:1.1rem;
     color:var(--muted); margin-bottom:16px; display:block;
   }
 
   .link-actions { display:flex; gap:8px; margin-top:20px; flex-wrap:wrap; }
   .link-btn {
     display:inline-flex; align-items:center; gap:6px;
-    font-family:'DM Mono',monospace; font-size:9px;
+    font-family:'DM Mono',monospace; font-size:1.35rem;
     letter-spacing:0.1em; text-transform:uppercase;
     padding:7px 14px; border:1px solid var(--border2);
     background:none; color:var(--muted); cursor:pointer;
@@ -278,23 +298,11 @@
   document.getElementById('dateDisplay').textContent =
     now.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
 
-  const SYSTEM_PROMPT = `Sen günlük ilham veren bir mood board uygulaması için içerik üreten yaratıcı bir yapay zekasın.
+  const SYSTEM_PROMPT = `SADECE ham JSON döndür. Markdown kullanma, backtick kullanma, açıklama yazma. İlk karakter { olmalı.
 
-Aşağıdaki 5 kategoride içerik üret. SADECE geçerli JSON döndür. JSON dışında hiçbir şey yazma, markdown backtick kullanma.
+{"gunun_siiri":{"metin":"4 satır Türk/dünya şiiri, satırları \n ile ayır","sair":""},"makale":{"baslik":"max 60 karakter","on_izleme":"1-2 cümle özet","detay":"tam paragraf","gercek_url":"web araması yap, gerçek URL yaz"},"ilgi_alani":{"on_izleme":"1 cümle","detay":"tam açıklama"},"teknik_terim":{"terim":"","on_izleme":"1 cümle","aciklama":"keyifli açıklama"},"sanat_eseri":{"eser_adi":"","ressam":"","on_izleme":"1 cümle","kisa_yorum":"derinlikli yorum"}}
 
-1. gunun_siiri: Dünya veya Türk edebiyatından 4 satırlık şiir kesiti. "sair" şair adı.
-2. makale: Sanat/teknoloji/felsefe üzerine gerçek makaleden. "baslik" makale başlığı (max 60 karakter). "on_izleme" konuyu anlayacak kadar 1-2 cümle özet. "detay" tam paragraf. Gerçek URL ekle.
-3. ilgi_alani: Blender/Houdini/Grasshopper algoritmik form üretimi (mimari değil). "on_izleme" 1-2 cümle. "detay" tam açıklama.
-4. teknik_terim: 3D/CG alanından karmaşık terim. "terim" adı. "on_izleme" tek cümleyle neyle ilgili. "aciklama" detaylı keyifli açıklama.
-5. sanat_eseri: Klasik veya modern tablo. "on_izleme" 1 cümleyle eser/ressam özeti. "kisa_yorum" derinlikli yorum.
-
-Format (değiştirme):
-{"gunun_siiri":{"metin":"","sair":""},"makale":{"baslik":"","on_izleme":"","detay":"","gercek_url":""},"ilgi_alani":{"on_izleme":"","detay":""},"teknik_terim":{"terim":"","on_izleme":"","aciklama":""},"sanat_eseri":{"eser_adi":"","ressam":"","on_izleme":"","kisa_yorum":""}}
-
-KRİTİK JSON KURALLARI:
-- Şiir satırları arasına \\n kullan (gerçek satır sonu değil, kaçış dizisi)
-- String içinde tırnak işareti varsa \\\" ile escape et
-- Hiçbir string'i yarım bırakma, tüm parantezleri kapat`;
+Blender/Houdini/Grasshopper algoritmik form (mimari görselleştirme değil). Tırnak içinde tırnak \" ile escape et.`;
 
   // Store parsed data globally for overlay use
   let currentData = null;
