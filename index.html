@@ -23,49 +23,42 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height:100%; }
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Cormorant Garamond', serif;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
+    background:var(--bg); color:var(--text);
+    font-family:'Cormorant Garamond',serif;
+    height:100dvh; display:flex; flex-direction:column;
   }
   body::before {
-    content:'';
-    position:fixed; inset:0;
+    content:''; position:fixed; inset:0;
     background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events:none; z-index:100; opacity:0.5;
+    pointer-events:none; z-index:0; opacity:0.5;
   }
   .app {
     max-width:420px; width:100%; margin:0 auto;
-    display:flex; flex-direction:column;
-    height:100dvh;
+    display:flex; flex-direction:column; height:100dvh;
+    position:relative;
   }
 
-  /* HEADER */
+  /* ── HEADER ── */
   .header {
     padding:16px 18px 12px;
     border-bottom:1px solid var(--border);
     display:flex; align-items:center; justify-content:space-between;
-    flex-shrink:0;
+    flex-shrink:0; position:relative; z-index:1;
   }
-  .header-left { display:flex; flex-direction:column; gap:2px; }
   .title {
-    font-family:'Syne',sans-serif;
-    font-size:11px; font-weight:700;
-    letter-spacing:0.22em; text-transform:uppercase;
-    color:var(--accent1);
+    font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+    letter-spacing:0.22em; text-transform:uppercase; color:var(--accent1);
   }
   .header-right { display:flex; align-items:center; gap:8px; }
   .date-display {
-    font-family:'DM Mono',monospace;
-    font-size:10px; color:var(--muted); letter-spacing:0.06em;
+    font-family:'DM Mono',monospace; font-size:10px;
+    color:var(--muted); letter-spacing:0.06em;
   }
   .refresh-btn {
     background:none; border:1px solid var(--border2);
     color:var(--muted); width:28px; height:28px;
     display:flex; align-items:center; justify-content:center;
-    cursor:pointer; transition:all 0.25s ease; flex-shrink:0;
+    cursor:pointer; transition:all 0.25s; flex-shrink:0;
   }
   .refresh-btn:hover { border-color:var(--accent1); color:var(--accent1); }
   .refresh-btn:disabled { opacity:0.25; cursor:not-allowed; }
@@ -74,131 +67,58 @@
 
   .error-msg {
     margin:10px 18px; padding:8px 12px;
-    border:1px solid rgba(200,90,90,0.25);
-    background:rgba(200,90,90,0.04);
-    font-family:'DM Mono',monospace; font-size:10px;
-    color:#c87e7e; display:none; flex-shrink:0;
+    border:1px solid rgba(200,90,90,0.25); background:rgba(200,90,90,0.04);
+    font-family:'DM Mono',monospace; font-size:10px; color:#c87e7e;
+    display:none; flex-shrink:0;
   }
   .error-msg.visible { display:block; }
 
-  /* CARDS */
-  #mainContent {
-    flex:1; display:flex; flex-direction:column; min-height:0;
-  }
+  /* ── CARD LIST ── */
+  #mainContent { flex:1; display:flex; flex-direction:column; min-height:0; position:relative; z-index:1; }
+
   .cards {
-    padding:8px 18px;
-    display:flex; flex-direction:column;
+    padding:8px 18px; display:flex; flex-direction:column;
     gap:6px; flex:1;
   }
 
   .card {
-    background:var(--surface);
-    border:1px solid var(--border);
-    overflow:hidden;
+    background:var(--surface); border:1px solid var(--border);
+    overflow:hidden; flex:1; display:flex; flex-direction:column;
     opacity:0; transform:translateY(8px);
-    transition:opacity 0.45s ease, transform 0.45s ease, border-color 0.2s ease;
-    flex:1; display:flex; flex-direction:column;
+    transition:opacity 0.4s ease, transform 0.4s ease, border-color 0.2s;
+    cursor:pointer;
   }
   .card.visible { opacity:1; transform:translateY(0); }
   .card:nth-child(1){transition-delay:0.04s}
-  .card:nth-child(2){transition-delay:0.11s}
-  .card:nth-child(3){transition-delay:0.18s}
-  .card:nth-child(4){transition-delay:0.25s}
-  .card:nth-child(5){transition-delay:0.32s}
-  .card.expanded { border-color:var(--border2); }
+  .card:nth-child(2){transition-delay:0.10s}
+  .card:nth-child(3){transition-delay:0.16s}
+  .card:nth-child(4){transition-delay:0.22s}
+  .card:nth-child(5){transition-delay:0.28s}
+  .card:hover { border-color:var(--border2); }
 
-  /* CARD HEADER */
   .card-header {
     display:flex; align-items:flex-start; gap:12px;
-    padding:14px 15px;
-    cursor:pointer; user-select:none; flex-shrink:0;
+    padding:14px 15px; flex-shrink:0;
   }
   .card-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:6px; }
   .card-meta { flex:1; min-width:0; display:flex; flex-direction:column; gap:5px; }
-
   .card-label {
-    font-family:'DM Mono',monospace;
-    font-size:9px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.55;
+    font-family:'DM Mono',monospace; font-size:9px;
+    letter-spacing:0.18em; text-transform:uppercase; opacity:0.55;
   }
-  .card-title {
-    font-size:16px; font-weight:400; line-height:1.4; color:var(--text);
-  }
-
+  .card-title { font-size:16px; font-weight:400; line-height:1.4; color:var(--text); }
   .card-preview {
-    font-size:13.5px; line-height:1.65;
-    color:var(--text); opacity:0.45;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
-    font-style:italic;
-    margin-top:1px;
+    font-size:13px; line-height:1.6; color:var(--text); opacity:0.4;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden; font-style:italic;
   }
-  .card--poem .card-preview { -webkit-line-clamp:4; }
-
   .card-arrow {
     flex-shrink:0; color:var(--muted2); margin-top:4px;
-    transition:transform 0.3s ease, color 0.2s ease;
+    transition:color 0.2s, transform 0.2s;
   }
-  .card.expanded .card-arrow { transform:rotate(90deg); }
-  .card-header:hover .card-arrow { color:var(--muted); }
+  .card:hover .card-arrow { color:var(--muted); transform:translateX(2px); }
 
-  .card.always-open .card-arrow { display:none; }
-  .card.always-open .card-header { cursor:default; }
-  .card.always-open .card-preview { display:none; }
-
-  /* CARD BODY */
-  .card-body {
-    max-height:0; overflow:hidden;
-    transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);
-    flex-shrink:0;
-  }
-  .card.expanded .card-body,
-  .card.always-open .card-body { max-height:800px; }
-
-  .card-body-inner {
-    padding:12px 15px 15px;
-    border-top:1px solid var(--border);
-  }
-
-  /* CONTENT TYPES */
-  .poem-text {
-    font-size:17px; font-style:italic; font-weight:300;
-    line-height:2.1; white-space:pre-line; color:var(--text);
-  }
-  .poem-author {
-    margin-top:12px; font-family:'DM Mono',monospace;
-    font-size:10px; color:var(--muted);
-  }
-  .poem-author::before { content:'— '; }
-
-  .article-text { font-size:15px; line-height:1.82; opacity:0.87; }
-
-  .link-actions { display:flex; gap:6px; margin-top:14px; flex-wrap:wrap; }
-  .link-btn {
-    display:inline-flex; align-items:center; gap:5px;
-    font-family:'DM Mono',monospace; font-size:9px;
-    letter-spacing:0.1em; text-transform:uppercase;
-    padding:6px 12px; border:1px solid var(--border2);
-    background:none; color:var(--muted); cursor:pointer;
-    text-decoration:none; transition:all 0.2s ease;
-  }
-  .link-btn:hover { border-color:var(--accent2); color:var(--accent2); }
-  .link-btn.copied { border-color:var(--accent4); color:var(--accent4); }
-
-  .insight-text { font-size:15px; line-height:1.82; opacity:0.87; }
-
-  .term-name {
-    font-family:'Syne',sans-serif; font-size:19px;
-    font-weight:700; letter-spacing:-0.01em; margin-bottom:9px;
-  }
-  .term-desc { font-size:15px; line-height:1.82; opacity:0.87; }
-
-  .art-title-full { font-size:17px; font-style:italic; font-weight:400; margin-bottom:3px; }
-  .art-artist { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:11px; }
-  .art-comment { font-size:15px; line-height:1.82; opacity:0.87; }
-
-  /* SKELETON */
+  /* ── SKELETON ── */
   .skeleton { padding:8px 18px; display:none; flex-direction:column; gap:6px; flex:1; }
   .skel-card {
     flex:1;
@@ -213,15 +133,105 @@
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   .state-loading .skeleton { display:flex; }
   .state-loading .cards { display:none; }
+
+  /* ── FULLSCREEN OVERLAY ── */
+  .overlay {
+    position:fixed; inset:0;
+    background:var(--bg);
+    z-index:200;
+    display:flex; flex-direction:column;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease;
+    max-width:420px; margin:0 auto;
+    /* match app width */
+    left:50%; transform:translateX(-50%);
+    width:100%;
+  }
+  .overlay.open { opacity:1; pointer-events:all; }
+
+  .overlay-header {
+    padding:14px 18px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .overlay-label {
+    font-family:'DM Mono',monospace; font-size:9px;
+    letter-spacing:0.18em; text-transform:uppercase; opacity:0.55;
+    display:flex; align-items:center; gap:8px;
+  }
+  .overlay-dot { width:6px; height:6px; border-radius:50%; }
+
+  .close-btn {
+    background:none; border:1px solid var(--border2);
+    color:var(--muted); width:28px; height:28px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .close-btn:hover { border-color:var(--text); color:var(--text); }
+
+  .overlay-body {
+    flex:1; overflow-y:auto; padding:24px 20px 32px;
+    /* smooth scroll */
+    scroll-behavior:smooth;
+  }
+  /* scrollbar */
+  .overlay-body::-webkit-scrollbar { width:3px; }
+  .overlay-body::-webkit-scrollbar-track { background:transparent; }
+  .overlay-body::-webkit-scrollbar-thumb { background:var(--border2); }
+
+  /* overlay content styles — bigger, more breathing room */
+  .overlay-title {
+    font-size:26px; font-weight:300; line-height:1.3;
+    color:var(--text); margin-bottom:20px;
+  }
+  .overlay-title.italic { font-style:italic; }
+
+  .poem-text {
+    font-size:19px; font-style:italic; font-weight:300;
+    line-height:2.2; white-space:pre-line; color:var(--text);
+  }
+  .poem-author {
+    margin-top:16px; font-family:'DM Mono',monospace;
+    font-size:10px; color:var(--muted);
+  }
+  .poem-author::before { content:'— '; }
+
+  .article-text { font-size:16px; line-height:1.9; opacity:0.87; }
+  .insight-text { font-size:16px; line-height:1.9; opacity:0.87; }
+  .term-desc { font-size:16px; line-height:1.9; opacity:0.87; }
+  .art-comment { font-size:16px; line-height:1.9; opacity:0.87; }
+
+  .art-artist {
+    font-family:'DM Mono',monospace; font-size:10px;
+    color:var(--muted); margin-bottom:16px; display:block;
+  }
+
+  .link-actions { display:flex; gap:8px; margin-top:20px; flex-wrap:wrap; }
+  .link-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'DM Mono',monospace; font-size:9px;
+    letter-spacing:0.1em; text-transform:uppercase;
+    padding:7px 14px; border:1px solid var(--border2);
+    background:none; color:var(--muted); cursor:pointer;
+    text-decoration:none; transition:all 0.2s;
+  }
+  .link-btn:hover { border-color:var(--accent2); color:var(--accent2); }
+  .link-btn.copied { border-color:var(--accent4); color:var(--accent4); }
+
+  /* grain on overlay too */
+  .overlay::before {
+    content:''; position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; opacity:0.5; z-index:0;
+  }
+  .overlay-header, .overlay-body { position:relative; z-index:1; }
 </style>
 </head>
 <body>
 <div class="app">
   <header class="header">
-    <div class="header-left">
-      <span class="title">İlham Panosu</span>
-
-    </div>
+    <span class="title">İlham Panosu</span>
     <div class="header-right">
       <span class="date-display" id="dateDisplay"></span>
       <button class="refresh-btn" id="refreshBtn" onclick="generate()" title="Yenile">
@@ -244,6 +254,22 @@
       <div class="skel-card"></div>
     </div>
     <div class="cards" id="cardsContainer"></div>
+  </div>
+
+  <!-- FULLSCREEN OVERLAY -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-header">
+      <div class="overlay-label">
+        <div class="overlay-dot" id="overlayDot"></div>
+        <span id="overlayLabel"></span>
+      </div>
+      <button class="close-btn" onclick="closeOverlay()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="overlay-body" id="overlayBody"></div>
   </div>
 </div>
 
@@ -270,12 +296,82 @@ KRİTİK JSON KURALLARI:
 - String içinde tırnak işareti varsa \\\" ile escape et
 - Hiçbir string'i yarım bırakma, tüm parantezleri kapat`;
 
-  function toggleCard(card) {
-    if (card.classList.contains('always-open')) return;
-    const expanded = card.classList.contains('expanded');
-    document.querySelectorAll('.card.expanded').forEach(c => c.classList.remove('expanded'));
-    if (!expanded) card.classList.add('expanded');
+  // Store parsed data globally for overlay use
+  let currentData = null;
+
+  function openOverlay(type) {
+    if (!currentData) return;
+    const overlay = document.getElementById('overlay');
+    const dot = document.getElementById('overlayDot');
+    const label = document.getElementById('overlayLabel');
+    const body = document.getElementById('overlayBody');
+
+    const configs = {
+      poem: {
+        accent: '--accent1', label: 'Günün Şiiri',
+        html: () => `
+          <div class="overlay-title italic">${currentData.gunun_siiri?.sair || ''}</div>
+          <div class="poem-text">${currentData.gunun_siiri?.metin || ''}</div>
+          <div class="poem-author">${currentData.gunun_siiri?.sair || ''}</div>`
+      },
+      article: {
+        accent: '--accent2', label: 'Makale',
+        html: () => {
+          const url = (currentData.makale?.gercek_url || '#').replace(/'/g,"\\'");
+          return `
+          <div class="overlay-title">${currentData.makale?.baslik || ''}</div>
+          <p class="article-text">${currentData.makale?.detay || ''}</p>
+          <div class="link-actions">
+            <a class="link-btn" href="${currentData.makale?.gercek_url || '#'}" target="_blank" rel="noopener">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+              Linke git
+            </a>
+            <button class="link-btn" onclick="copyLink('${url}', this)">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Kopyala
+            </button>
+          </div>`;
+        }
+      },
+      insight: {
+        accent: '--accent4', label: '3D & Algoritmik',
+        html: () => `
+          <div class="overlay-title">${currentData.ilgi_alani?.on_izleme || '3D Bilgi'}</div>
+          <p class="insight-text">${currentData.ilgi_alani?.detay || ''}</p>`
+      },
+      term: {
+        accent: '--accent5', label: 'Teknik Terim',
+        html: () => `
+          <div class="overlay-title" style="color:var(--accent5)">${currentData.teknik_terim?.terim || ''}</div>
+          <p class="term-desc">${currentData.teknik_terim?.aciklama || ''}</p>`
+      },
+      art: {
+        accent: '--accent3', label: 'Sanat Eseri',
+        html: () => `
+          <div class="overlay-title italic" style="color:var(--accent3)">${currentData.sanat_eseri?.eser_adi || ''}</div>
+          <span class="art-artist">${currentData.sanat_eseri?.ressam || ''}</span>
+          <p class="art-comment">${currentData.sanat_eseri?.kisa_yorum || ''}</p>`
+      }
+    };
+
+    const cfg = configs[type];
+    if (!cfg) return;
+
+    dot.style.background = `var(${cfg.accent})`;
+    label.textContent = cfg.label;
+    label.style.color = `var(${cfg.accent})`;
+    body.innerHTML = cfg.html();
+    body.scrollTop = 0;
+
+    overlay.classList.add('open');
   }
+
+  function closeOverlay() {
+    document.getElementById('overlay').classList.remove('open');
+  }
+
+  // Close on Escape key
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverlay(); });
 
   async function copyLink(url, btn) {
     try {
@@ -287,98 +383,56 @@ KRİTİK JSON KURALLARI:
     } catch(e) {}
   }
 
-  // Estimate if content is "short" enough to always be open
-  function isShortContent(text) {
-    return text && text.length < 320;
-  }
-
-  function buildCard({ cls, accentVar, label, title, previewText, bodyHtml, alwaysOpen }) {
+  function buildCard({ type, accentVar, label, title, previewText }) {
     const card = document.createElement('div');
-    card.className = `card ${cls}${alwaysOpen ? ' always-open' : ''}`;
-
+    card.className = 'card';
     card.innerHTML = `
-      <div class="card-header" onclick="toggleCard(this.parentElement)">
+      <div class="card-header">
         <div class="card-dot" style="background:var(${accentVar})"></div>
         <div class="card-meta">
           <span class="card-label" style="color:var(${accentVar})">${label}</span>
           <span class="card-title">${title}</span>
-          ${previewText && !alwaysOpen ? `<span class="card-preview">${previewText}</span>` : ''}
+          ${previewText ? `<span class="card-preview">${previewText}</span>` : ''}
         </div>
         <svg class="card-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
           <polyline points="9 18 15 12 9 6"/>
         </svg>
       </div>
-      <div class="card-body"><div class="card-body-inner">${bodyHtml}</div></div>
     `;
+    card.addEventListener('click', () => openOverlay(type));
     return card;
   }
 
   function renderCards(data) {
+    currentData = data;
     const container = document.getElementById('cardsContainer');
     container.innerHTML = '';
 
-    const url = (data.makale?.gercek_url || '#').replace(/'/g,"\\'");
-
-    // Poem: always open (it's short by nature)
-    const poemText = data.gunun_siiri?.metin || '';
-    const poemOpen = true;
-
-    // Term: always open if explanation is short
-    const termOpen = isShortContent(data.teknik_terim?.aciklama);
-
     const defs = [
       {
-        cls:'card--poem', accentVar:'--accent1', label:'Günün Şiiri',
+        type:'poem', accentVar:'--accent1', label:'Günün Şiiri',
         title: data.gunun_siiri?.sair || '',
-        previewText: null,
-        alwaysOpen: poemOpen,
-        bodyHtml: `
-          <div class="poem-text">${poemText}</div>
-          <div class="poem-author">${data.gunun_siiri?.sair || ''}</div>`
+        previewText: (data.gunun_siiri?.metin || '').split('\\n').slice(0,2).join(' / ')
       },
       {
-        cls:'card--article', accentVar:'--accent2', label:'Makale',
+        type:'article', accentVar:'--accent2', label:'Makale',
         title: data.makale?.baslik || '',
-        previewText: data.makale?.on_izleme || '',
-        alwaysOpen: false,
-        bodyHtml: `
-          <p class="article-text">${data.makale?.detay || ''}</p>
-          <div class="link-actions">
-            <a class="link-btn" href="${data.makale?.gercek_url || '#'}" target="_blank" rel="noopener">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-              Linke git
-            </a>
-            <button class="link-btn" onclick="copyLink('${url}', this)">
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-              Kopyala
-            </button>
-          </div>`
+        previewText: data.makale?.on_izleme || ''
       },
       {
-        cls:'card--3d', accentVar:'--accent4', label:'3D & Algoritmik',
+        type:'insight', accentVar:'--accent4', label:'3D & Algoritmik',
         title: '3D Bilgi',
-        previewText: data.ilgi_alani?.on_izleme || '',
-        alwaysOpen: isShortContent(data.ilgi_alani?.detay),
-        bodyHtml: `<p class="insight-text">${data.ilgi_alani?.detay || ''}</p>`
+        previewText: data.ilgi_alani?.on_izleme || ''
       },
       {
-        cls:'card--term', accentVar:'--accent5', label:'Teknik Terim',
+        type:'term', accentVar:'--accent5', label:'Teknik Terim',
         title: data.teknik_terim?.terim || '',
-        previewText: data.teknik_terim?.on_izleme || '',
-        alwaysOpen: termOpen,
-        bodyHtml: `
-          <div class="term-name" style="color:var(--accent5)">${data.teknik_terim?.terim || ''}</div>
-          <p class="term-desc">${data.teknik_terim?.aciklama || ''}</p>`
+        previewText: data.teknik_terim?.on_izleme || ''
       },
       {
-        cls:'card--art', accentVar:'--accent3', label:'Sanat Eseri',
-        title: data.sanat_eseri?.eser_adi ? `${data.sanat_eseri.eser_adi}` : '',
-        previewText: data.sanat_eseri?.on_izleme || '',
-        alwaysOpen: isShortContent(data.sanat_eseri?.kisa_yorum),
-        bodyHtml: `
-          <div class="art-title-full" style="color:var(--accent3)">${data.sanat_eseri?.eser_adi || ''}</div>
-          <div class="art-artist">${data.sanat_eseri?.ressam || ''}</div>
-          <p class="art-comment">${data.sanat_eseri?.kisa_yorum || ''}</p>`
+        type:'art', accentVar:'--accent3', label:'Sanat Eseri',
+        title: data.sanat_eseri?.eser_adi || '',
+        previewText: data.sanat_eseri?.on_izleme || ''
       }
     ];
 
@@ -394,6 +448,9 @@ KRİTİK JSON KURALLARI:
     const content = document.getElementById('mainContent');
     const errorMsg = document.getElementById('errorMsg');
 
+    // Close overlay if open
+    closeOverlay();
+
     btn.disabled = true;
     btn.classList.add('spinning');
     errorMsg.classList.remove('visible');
@@ -404,24 +461,20 @@ KRİTİK JSON KURALLARI:
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
-          model:"claude-sonnet-4-20250514",
-          max_tokens:1200,
+          model:"gemini-2.5-flash",
+          max_tokens:4000,
           system:SYSTEM_PROMPT,
           messages:[{role:"user",content:`Bugün ${now.toLocaleDateString('tr-TR')} için ilham panosunu oluştur. Her seferinde farklı içerik üret.`}]
         })
       });
       const data = await res.json();
       const raw = data.content.map(i=>i.text||'').join('');
-      // Extract first {...} block robustly
       const match = raw.match(/\{[\s\S]*\}/);
       if (!match) throw new Error('No JSON found in response');
-      // Sanitize: remove control characters that break JSON parsing
-      const cleaned = match[0]
-        .replace(/[\u0000-\u001F\u007F]/g, m => {
-          // Keep allowed escape sequences
-          const allowed = {'\n':'\\n','\r':'\\r','\t':'\\t'};
-          return allowed[m] || '';
-        });
+      const cleaned = match[0].replace(/[\u0000-\u001F\u007F]/g, m => {
+        const allowed = {'\n':'\\n','\r':'\\r','\t':'\\t'};
+        return allowed[m] || '';
+      });
       const parsed = JSON.parse(cleaned);
       content.className = '';
       renderCards(parsed);
