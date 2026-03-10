@@ -20,19 +20,26 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system || '' }] },
           contents: [{ role: 'user', parts: [{ text: userMessage }] }],
-          generationConfig: { temperature: 1, maxOutputTokens: 4000 },
-          thinkingConfig: { thinkingBudget: 0 },
+          generationConfig: {
+            temperature: 1,
+            maxOutputTokens: 4000,
+            thinkingConfig: { thinkingBudget: 0 },
+          },
         }),
       }
     );
 
     const data = await response.json();
+    console.log('status:', response.status);
+    console.log('finishReason:', data.candidates?.[0]?.finishReason);
+    console.log('text length:', data.candidates?.[0]?.content?.parts?.[0]?.text?.length);
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return res.status(200).json({
       content: [{ type: 'text', text }],
     });
   } catch (err) {
+    console.log('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
