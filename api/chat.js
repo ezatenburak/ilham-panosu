@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -20,21 +20,18 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system || '' }] },
           contents: [{ role: 'user', parts: [{ text: userMessage }] }],
-          generationConfig: { temperature: 1, maxOutputTokens: 1200 },
+          generationConfig: { temperature: 1, maxOutputTokens: 4000 },
         }),
       }
     );
 
     const data = await response.json();
-    console.log('Gemini status:', response.status);
-    console.log('Gemini data:', JSON.stringify(data).slice(0, 600));
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return res.status(200).json({
       content: [{ type: 'text', text }],
     });
   } catch (err) {
-    console.log('Error:', err.message);
     return res.status(500).json({ error: err.message });
   }
 }
