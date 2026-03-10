@@ -51,7 +51,9 @@ module.exports = async function handler(req, res) {
     });
 
     const mainData = await mainRes.json();
+    console.log('main status:', mainRes.status);
     console.log('main finishReason:', mainData.candidates?.[0]?.finishReason);
+    console.log('main error:', mainData.error?.message);
 
     const text = mainData.candidates?.[0]?.content?.parts
       ?.filter(p => p.text)?.map(p => p.text)?.join('') || '';
