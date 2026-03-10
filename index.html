@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İlham Panosu</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #13131a;
+    --border: #1e1e2e;
+    --border2: #252535;
+    --accent1: #c8a97e;
+    --accent2: #7e9fc8;
+    --accent3: #c87e9f;
+    --accent4: #7ec89f;
+    --accent5: #a07ec8;
+    --text: #e8e4dd;
+    --muted: #6b6880;
+    --muted2: #4a4760;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none; z-index:100; opacity:0.5;
+  }
+  .app { max-width:420px; margin:0 auto; padding-bottom:24px; }
+
+  /* HEADER */
+  .header {
+    padding:18px 16px 13px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .header-left { display:flex; flex-direction:column; gap:2px; }
+  .title {
+    font-family:'Syne',sans-serif;
+    font-size:10px; font-weight:700;
+    letter-spacing:0.22em; text-transform:uppercase;
+    color:var(--accent1);
+  }
+  .subtitle {
+    font-size:17px; font-weight:300; font-style:italic;
+    color:var(--text); line-height:1.2;
+  }
+  .header-right { display:flex; align-items:center; gap:8px; }
+  .date-display {
+    font-family:'DM Mono',monospace;
+    font-size:9px; color:var(--muted); letter-spacing:0.06em;
+  }
+  .refresh-btn {
+    background:none; border:1px solid var(--border2);
+    color:var(--muted); width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.25s ease; flex-shrink:0;
+  }
+  .refresh-btn:hover { border-color:var(--accent1); color:var(--accent1); }
+  .refresh-btn:disabled { opacity:0.25; cursor:not-allowed; }
+  .refresh-btn.spinning svg { animation:spin 0.7s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .error-msg {
+    margin:10px 16px; padding:8px 12px;
+    border:1px solid rgba(200,90,90,0.25);
+    background:rgba(200,90,90,0.04);
+    font-family:'DM Mono',monospace; font-size:9px;
+    color:#c87e7e; display:none;
+  }
+  .error-msg.visible { display:block; }
+
+  /* CARDS */
+  .cards { padding:8px 16px; display:flex; flex-direction:column; gap:5px; }
+
+  .card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    overflow:hidden;
+    opacity:0; transform:translateY(8px);
+    transition:opacity 0.45s ease, transform 0.45s ease, border-color 0.2s ease;
+  }
+  .card.visible { opacity:1; transform:translateY(0); }
+  .card:nth-child(1){transition-delay:0.04s}
+  .card:nth-child(2){transition-delay:0.11s}
+  .card:nth-child(3){transition-delay:0.18s}
+  .card:nth-child(4){transition-delay:0.25s}
+  .card:nth-child(5){transition-delay:0.32s}
+  .card.expanded { border-color:var(--border2); }
+
+  /* ── CARD HEADER ── */
+  .card-header {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:12px 13px 12px;
+    cursor:pointer; user-select:none;
+  }
+  .card-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+  .card-meta { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+
+  .card-label {
+    font-family:'DM Mono',monospace;
+    font-size:8px; letter-spacing:0.18em; text-transform:uppercase; opacity:0.55;
+  }
+  .card-title {
+    font-size:14px; font-weight:400; line-height:1.4;
+    color:var(--text);
+  }
+
+  /* Preview lines shown in collapsed state */
+  .card-preview {
+    font-size:12.5px; line-height:1.6;
+    color:var(--text); opacity:0.45;
+    /* clamp to 2 lines */
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    font-style:italic;
+    margin-top:1px;
+  }
+  /* poem preview: show all lines when card is a poem-type collapsed */
+  .card--poem .card-preview {
+    -webkit-line-clamp:4;
+  }
+
+  .card-arrow {
+    flex-shrink:0; color:var(--muted2); margin-top:3px;
+    transition:transform 0.3s ease, color 0.2s ease;
+  }
+  .card.expanded .card-arrow { transform:rotate(90deg); }
+  .card-header:hover .card-arrow { color:var(--muted); }
+
+  /* Hide arrow and preview for always-open cards */
+  .card.always-open .card-arrow { display:none; }
+  .card.always-open .card-header { cursor:default; }
+  .card.always-open .card-preview { display:none; }
+
+  /* ── CARD BODY ── */
+  .card-body {
+    max-height:0; overflow:hidden;
+    transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .card.expanded .card-body,
+  .card.always-open .card-body { max-height:800px; }
+
+  .card-body-inner {
+    padding:0 13px 14px;
+    border-top:1px solid var(--border);
+    padding-top:12px;
+  }
+
+  /* ── CONTENT TYPES ── */
+
+  /* poem */
+  .poem-text {
+    font-size:15px; font-style:italic; font-weight:300;
+    line-height:2; white-space:pre-line; color:var(--text);
+  }
+  .poem-author {
+    margin-top:10px; font-family:'DM Mono',monospace;
+    font-size:9px; color:var(--muted);
+  }
+  .poem-author::before { content:'— '; }
+
+  /* article */
+  .article-text { font-size:13.5px; line-height:1.82; opacity:0.87; }
+
+  .link-actions { display:flex; gap:6px; margin-top:12px; flex-wrap:wrap; }
+  .link-btn {
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:'DM Mono',monospace; font-size:8px;
+    letter-spacing:0.1em; text-transform:uppercase;
+    padding:5px 10px; border:1px solid var(--border2);
+    background:none; color:var(--muted); cursor:pointer;
+    text-decoration:none; transition:all 0.2s ease;
+  }
+  .link-btn:hover { border-color:var(--accent2); color:var(--accent2); }
+  .link-btn.copied { border-color:var(--accent4); color:var(--accent4); }
+
+  /* insight */
+  .insight-text { font-size:13.5px; line-height:1.82; opacity:0.87; }
+
+  /* term */
+  .term-name {
+    font-family:'Syne',sans-serif; font-size:17px;
+    font-weight:700; letter-spacing:-0.01em; margin-bottom:8px;
+  }
+  .term-desc { font-size:13.5px; line-height:1.82; opacity:0.87; }
+
+  /* art */
+  .art-title-full { font-size:15px; font-style:italic; font-weight:400; margin-bottom:2px; }
+  .art-artist { font-family:'DM Mono',monospace; font-size:9px; color:var(--muted); margin-bottom:10px; }
+  .art-comment { font-size:13.5px; line-height:1.82; opacity:0.87; }
+
+  /* ── SKELETON ── */
+  .skeleton { padding:8px 16px; display:none; flex-direction:column; gap:5px; }
+  .skel-card {
+    background:linear-gradient(90deg,var(--surface) 25%,var(--border) 50%,var(--surface) 75%);
+    background-size:200% 100%; animation:shimmer 1.4s infinite;
+    border:1px solid var(--border);
+  }
+  .skel-card:nth-child(1){height:72px}
+  .skel-card:nth-child(2){height:88px;animation-delay:0.1s}
+  .skel-card:nth-child(3){height:80px;animation-delay:0.2s}
+  .skel-card:nth-child(4){height:64px;animation-delay:0.3s}
+  .skel-card:nth-child(5){height:76px;animation-delay:0.4s}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .state-loading .skeleton { display:flex; }
+  .state-loading .cards { display:none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-left">
+      <span class="title">İlham Panosu</span>
+
+    </div>
+    <div class="header-right">
+      <span class="date-display" id="dateDisplay"></span>
+      <button class="refresh-btn" id="refreshBtn" onclick="generate()" title="Yenile">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+          <path d="M21 3v5h-5"/>
+          <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+          <path d="M8 16H3v5"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div id="mainContent">
+    <div class="skeleton">
+      <div class="skel-card"></div><div class="skel-card"></div>
+      <div class="skel-card"></div><div class="skel-card"></div>
+      <div class="skel-card"></div>
+    </div>
+    <div class="cards" id="cardsContainer"></div>
+  </div>
+</div>
+
+<script>
+  const now = new Date();
+  document.getElementById('dateDisplay').textContent =
+    now.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+  const SYSTEM_PROMPT = `Sen günlük ilham veren bir mood board uygulaması için içerik üreten yaratıcı bir yapay zekasın.
+
+Aşağıdaki 5 kategoride içerik üret. SADECE geçerli JSON döndür. JSON dışında hiçbir şey yazma, markdown backtick kullanma.
+
+1. gunun_siiri: Dünya veya Türk edebiyatından 4 satırlık şiir kesiti. "sair" şair adı.
+2. makale: Sanat/teknoloji/felsefe üzerine gerçek makaleden. "baslik" makale başlığı (max 60 karakter). "on_izleme" konuyu anlayacak kadar 1-2 cümle özet. "detay" tam paragraf. Gerçek URL ekle.
+3. ilgi_alani: Blender/Houdini/Grasshopper algoritmik form üretimi (mimari değil). "on_izleme" 1-2 cümle. "detay" tam açıklama.
+4. teknik_terim: 3D/CG alanından karmaşık terim. "terim" adı. "on_izleme" tek cümleyle neyle ilgili. "aciklama" detaylı keyifli açıklama.
+5. sanat_eseri: Klasik veya modern tablo. "on_izleme" 1 cümleyle eser/ressam özeti. "kisa_yorum" derinlikli yorum.
+
+Format (değiştirme):
+{"gunun_siiri":{"metin":"","sair":""},"makale":{"baslik":"","on_izleme":"","detay":"","gercek_url":""},"ilgi_alani":{"on_izleme":"","detay":""},"teknik_terim":{"terim":"","on_izleme":"","aciklama":""},"sanat_eseri":{"eser_adi":"","ressam":"","on_izleme":"","kisa_yorum":""}}
+
+KRİTİK JSON KURALLARI:
+- Şiir satırları arasına \\n kullan (gerçek satır sonu değil, kaçış dizisi)
+- String içinde tırnak işareti varsa \\\" ile escape et
+- Hiçbir string'i yarım bırakma, tüm parantezleri kapat`;
+
+  function toggleCard(card) {
+    if (card.classList.contains('always-open')) return;
+    const expanded = card.classList.contains('expanded');
+    document.querySelectorAll('.card.expanded').forEach(c => c.classList.remove('expanded'));
+    if (!expanded) card.classList.add('expanded');
+  }
+
+  async function copyLink(url, btn) {
+    try {
+      await navigator.clipboard.writeText(url);
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Kopyalandı`;
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+    } catch(e) {}
+  }
+
+  // Estimate if content is "short" enough to always be open
+  function isShortContent(text) {
+    return text && text.length < 320;
+  }
+
+  function buildCard({ cls, accentVar, label, title, previewText, bodyHtml, alwaysOpen }) {
+    const card = document.createElement('div');
+    card.className = `card ${cls}${alwaysOpen ? ' always-open' : ''}`;
+
+    card.innerHTML = `
+      <div class="card-header" onclick="toggleCard(this.parentElement)">
+        <div class="card-dot" style="background:var(${accentVar})"></div>
+        <div class="card-meta">
+          <span class="card-label" style="color:var(${accentVar})">${label}</span>
+          <span class="card-title">${title}</span>
+          ${previewText && !alwaysOpen ? `<span class="card-preview">${previewText}</span>` : ''}
+        </div>
+        <svg class="card-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+      <div class="card-body"><div class="card-body-inner">${bodyHtml}</div></div>
+    `;
+    return card;
+  }
+
+  function renderCards(data) {
+    const container = document.getElementById('cardsContainer');
+    container.innerHTML = '';
+
+    const url = (data.makale?.gercek_url || '#').replace(/'/g,"\\'");
+
+    // Poem: always open (it's short by nature)
+    const poemText = data.gunun_siiri?.metin || '';
+    const poemOpen = true;
+
+    // Term: always open if explanation is short
+    const termOpen = isShortContent(data.teknik_terim?.aciklama);
+
+    const defs = [
+      {
+        cls:'card--poem', accentVar:'--accent1', label:'Günün Şiiri',
+        title: data.gunun_siiri?.sair || '',
+        previewText: null,
+        alwaysOpen: poemOpen,
+        bodyHtml: `
+          <div class="poem-text">${poemText}</div>
+          <div class="poem-author">${data.gunun_siiri?.sair || ''}</div>`
+      },
+      {
+        cls:'card--article', accentVar:'--accent2', label:'Makale',
+        title: data.makale?.baslik || '',
+        previewText: data.makale?.on_izleme || '',
+        alwaysOpen: false,
+        bodyHtml: `
+          <p class="article-text">${data.makale?.detay || ''}</p>
+          <div class="link-actions">
+            <a class="link-btn" href="${data.makale?.gercek_url || '#'}" target="_blank" rel="noopener">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+              Linke git
+            </a>
+            <button class="link-btn" onclick="copyLink('${url}', this)">
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Kopyala
+            </button>
+          </div>`
+      },
+      {
+        cls:'card--3d', accentVar:'--accent4', label:'3D & Algoritmik',
+        title: '3D Bilgi',
+        previewText: data.ilgi_alani?.on_izleme || '',
+        alwaysOpen: isShortContent(data.ilgi_alani?.detay),
+        bodyHtml: `<p class="insight-text">${data.ilgi_alani?.detay || ''}</p>`
+      },
+      {
+        cls:'card--term', accentVar:'--accent5', label:'Teknik Terim',
+        title: data.teknik_terim?.terim || '',
+        previewText: data.teknik_terim?.on_izleme || '',
+        alwaysOpen: termOpen,
+        bodyHtml: `
+          <div class="term-name" style="color:var(--accent5)">${data.teknik_terim?.terim || ''}</div>
+          <p class="term-desc">${data.teknik_terim?.aciklama || ''}</p>`
+      },
+      {
+        cls:'card--art', accentVar:'--accent3', label:'Sanat Eseri',
+        title: data.sanat_eseri?.eser_adi ? `${data.sanat_eseri.eser_adi}` : '',
+        previewText: data.sanat_eseri?.on_izleme || '',
+        alwaysOpen: isShortContent(data.sanat_eseri?.kisa_yorum),
+        bodyHtml: `
+          <div class="art-title-full" style="color:var(--accent3)">${data.sanat_eseri?.eser_adi || ''}</div>
+          <div class="art-artist">${data.sanat_eseri?.ressam || ''}</div>
+          <p class="art-comment">${data.sanat_eseri?.kisa_yorum || ''}</p>`
+      }
+    ];
+
+    defs.forEach(def => {
+      const card = buildCard(def);
+      container.appendChild(card);
+      requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('visible')));
+    });
+  }
+
+  async function generate() {
+    const btn = document.getElementById('refreshBtn');
+    const content = document.getElementById('mainContent');
+    const errorMsg = document.getElementById('errorMsg');
+
+    btn.disabled = true;
+    btn.classList.add('spinning');
+    errorMsg.classList.remove('visible');
+    content.className = 'state-loading';
+
+    try {
+      const res = await fetch("/api/chat", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:1200,
+          system:SYSTEM_PROMPT,
+          messages:[{role:"user",content:`Bugün ${now.toLocaleDateString('tr-TR')} için ilham panosunu oluştur. Her seferinde farklı içerik üret.`}]
+        })
+      });
+      const data = await res.json();
+      const raw = data.content.map(i=>i.text||'').join('');
+      // Extract first {...} block robustly
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON found in response');
+      // Sanitize: remove control characters that break JSON parsing
+      const cleaned = match[0]
+        .replace(/[\u0000-\u001F\u007F]/g, m => {
+          // Keep allowed escape sequences
+          const allowed = {'\n':'\\n','\r':'\\r','\t':'\\t'};
+          return allowed[m] || '';
+        });
+      const parsed = JSON.parse(cleaned);
+      content.className = '';
+      renderCards(parsed);
+    } catch(err) {
+      content.className = '';
+      errorMsg.textContent = 'İçerik oluşturulamadı. Lütfen tekrar dene.';
+      errorMsg.classList.add('visible');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('spinning');
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', generate);
+</script>
+</body>
+</html>
