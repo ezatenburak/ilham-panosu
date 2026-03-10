@@ -30,10 +30,18 @@ module.exports = async function handler(req, res) {
     console.log('status:', response.status);
     console.log('finishReason:', data.candidates?.[0]?.finishReason);
 
-    const text = data.candidates?.[0]?.content?.parts
-      ?.filter(p => p.text)
-      ?.map(p => p.text)
-      ?.join('') || '';
+    // Web search tool causes multi-turn: collect all candidate contents
+    const allParts = [];
+    for (const candidate of (data.candidates || [])) {
+      for (const part of (candidate.content?.parts || [])) {
+        if (part.text) allParts.push(part.text);
+      }
+    }
+
+    // Also check if there's a second turn (search results + final answer)
+    const text = allParts.join('');
+    console.log('text length:', text.length);
+    console.log('text preview:', text.slice(0, 200));
 
     return res.status(200).json({ content: [{ type: 'text', text }] });
   } catch (err) {
