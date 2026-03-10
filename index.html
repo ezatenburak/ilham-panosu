@@ -296,23 +296,11 @@
   document.getElementById('dateDisplay').textContent =
     now.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'});
 
-  const SYSTEM_PROMPT = `Sen günlük ilham veren bir mood board uygulaması için içerik üreten yaratıcı bir yapay zekasın.
+  const SYSTEM_PROMPT = `SADECE JSON döndür, başka hiçbir şey yazma, markdown backtick kullanma.
 
-Aşağıdaki 5 kategoride içerik üret. SADECE geçerli JSON döndür. JSON dışında hiçbir şey yazma, markdown backtick kullanma.
+{"gunun_siiri":{"metin":"4 satır Türk/dünya şiiri, satırları \n ile ayır","sair":""},"makale":{"baslik":"max 60 karakter","on_izleme":"1-2 cümle özet","detay":"tam paragraf","gercek_url":"web araması yap, gerçek URL yaz"},"ilgi_alani":{"on_izleme":"1 cümle","detay":"tam açıklama"},"teknik_terim":{"terim":"","on_izleme":"1 cümle","aciklama":"keyifli açıklama"},"sanat_eseri":{"eser_adi":"","ressam":"","on_izleme":"1 cümle","kisa_yorum":"derinlikli yorum"}}
 
-1. gunun_siiri: Dünya veya Türk edebiyatından 4 satırlık şiir kesiti. "sair" şair adı.
-2. makale: Sanat/teknoloji/felsefe üzerine gerçek makaleden. "baslik" makale başlığı (max 60 karakter). "on_izleme" konuyu anlayacak kadar 1-2 cümle özet. "detay" tam paragraf. Gerçek URL ekle.
-3. ilgi_alani: Blender/Houdini/Grasshopper algoritmik form üretimi (mimari değil). "on_izleme" 1-2 cümle. "detay" tam açıklama.
-4. teknik_terim: 3D/CG alanından karmaşık terim. "terim" adı. "on_izleme" tek cümleyle neyle ilgili. "aciklama" detaylı keyifli açıklama.
-5. sanat_eseri: Klasik veya modern tablo. "on_izleme" 1 cümleyle eser/ressam özeti. "kisa_yorum" derinlikli yorum.
-
-Format (değiştirme):
-{"gunun_siiri":{"metin":"","sair":""},"makale":{"baslik":"","on_izleme":"","detay":"","gercek_url":""},"ilgi_alani":{"on_izleme":"","detay":""},"teknik_terim":{"terim":"","on_izleme":"","aciklama":""},"sanat_eseri":{"eser_adi":"","ressam":"","on_izleme":"","kisa_yorum":""}}
-
-KRİTİK JSON KURALLARI:
-- Şiir satırları arasına \\n kullan (gerçek satır sonu değil, kaçış dizisi)
-- String içinde tırnak işareti varsa \\\" ile escape et
-- Hiçbir string'i yarım bırakma, tüm parantezleri kapat`;
+Blender/Houdini/Grasshopper algoritmik form (mimari görselleştirme değil). Tırnak içinde tırnak \" ile escape et.`;
 
   // Store parsed data globally for overlay use
   let currentData = null;
