@@ -23,7 +23,6 @@ module.exports = async function handler(req, res) {
           generationConfig: {
             temperature: 1,
             maxOutputTokens: 4000,
-            thinkingConfig: { thinkingBudget: 0 },
           },
         }),
       }
@@ -32,7 +31,7 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
     console.log('status:', response.status);
     console.log('finishReason:', data.candidates?.[0]?.finishReason);
-    console.log('text length:', data.candidates?.[0]?.content?.parts?.[0]?.text?.length);
+    console.log('data sample:', JSON.stringify(data).slice(0, 300));
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return res.status(200).json({
